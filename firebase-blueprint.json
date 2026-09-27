@@ -1,0 +1,251 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Stores user profile, skills, education, target role, and study preferences.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Firebase Auth user identifier",
+          "maxLength": 128
+        },
+        "name": {
+          "type": "string",
+          "description": "Display name of the user",
+          "maxLength": 100
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the user",
+          "maxLength": 150
+        },
+        "education": {
+          "type": "string",
+          "description": "Highest education qualification (e.g. Undergraduate, Graduate)",
+          "maxLength": 50
+        },
+        "experience": {
+          "type": "string",
+          "description": "Career experience level (e.g. Student, Fresher, Junior Developer)",
+          "maxLength": 50
+        },
+        "careerGoal": {
+          "type": "string",
+          "description": "Selected target engineering role",
+          "maxLength": 80
+        },
+        "studyHours": {
+          "type": "string",
+          "description": "Weekly study time commitment",
+          "maxLength": 30
+        },
+        "targetTimeline": {
+          "type": "string",
+          "description": "Target timeline to reach job readiness",
+          "maxLength": 30
+        },
+        "targetMarket": {
+          "type": "string",
+          "description": "Geographical tech job market preference",
+          "maxLength": 50
+        },
+        "skills": {
+          "type": "array",
+          "description": "List of user skills with proficiencies"
+        },
+        "weakSkills": {
+          "type": "array",
+          "description": "List of skills requiring improvement"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Account or profile creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Last update timestamp"
+        }
+      },
+      "required": ["userId", "name", "careerGoal", "studyHours", "targetTimeline"]
+    },
+    "UserRoadmap": {
+      "title": "UserRoadmap",
+      "description": "Personalized career roadmap generated for the user",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique roadmap document id",
+          "maxLength": 128
+        },
+        "userId": {
+          "type": "string",
+          "description": "Owner user UID",
+          "maxLength": 128
+        },
+        "role": {
+          "type": "string",
+          "description": "Target career role for this roadmap",
+          "maxLength": 80
+        },
+        "overallScore": {
+          "type": "number",
+          "description": "Calculated Career Readiness Score percentage"
+        },
+        "immediatePrioritySkill": {
+          "type": "string",
+          "description": "Name of the highest priority skill to learn next",
+          "maxLength": 100
+        },
+        "immediatePriorityWhy": {
+          "type": "string",
+          "description": "Reasoning for the priority skill",
+          "maxLength": 500
+        },
+        "immediatePriorityProject": {
+          "type": "string",
+          "description": "Suggested project for immediate practice",
+          "maxLength": 200
+        },
+        "phasesCount": {
+          "type": "number",
+          "description": "Number of sequential milestone phases"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Roadmap generation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Roadmap last modified timestamp"
+        }
+      },
+      "required": ["id", "userId", "role", "overallScore", "immediatePrioritySkill"]
+    },
+    "TaskProgress": {
+      "title": "TaskProgress",
+      "description": "Tracks completion status of roadmap practice exercises",
+      "type": "object",
+      "properties": {
+        "taskId": {
+          "type": "string",
+          "description": "Unique task identifier",
+          "maxLength": 128
+        },
+        "userId": {
+          "type": "string",
+          "description": "Owner user UID",
+          "maxLength": 128
+        },
+        "phaseNumber": {
+          "type": "number",
+          "description": "Roadmap phase number"
+        },
+        "completed": {
+          "type": "boolean",
+          "description": "Completion state"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Last updated timestamp"
+        }
+      },
+      "required": ["taskId", "userId", "phaseNumber", "completed"]
+    },
+    "WeeklyScheduleRecord": {
+      "title": "WeeklyScheduleRecord",
+      "description": "Weekly structured learning schedule and habit tracking",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique schedule identifier",
+          "maxLength": 128
+        },
+        "userId": {
+          "type": "string",
+          "description": "Owner user UID",
+          "maxLength": 128
+        },
+        "weekTitle": {
+          "type": "string",
+          "description": "Title of the active week",
+          "maxLength": 100
+        },
+        "totalTasks": {
+          "type": "number",
+          "description": "Total scheduled tasks count"
+        },
+        "completedTasks": {
+          "type": "number",
+          "description": "Completed scheduled tasks count"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Last updated timestamp"
+        }
+      },
+      "required": ["id", "userId", "weekTitle"]
+    },
+    "ChatMessageRecord": {
+      "title": "ChatMessageRecord",
+      "description": "Saved AI Career Advisor chat log",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique message ID",
+          "maxLength": 128
+        },
+        "userId": {
+          "type": "string",
+          "description": "User UID who owns the chat conversation",
+          "maxLength": 128
+        },
+        "sender": {
+          "type": "string",
+          "description": "Sender indicator: user or assistant",
+          "maxLength": 20
+        },
+        "text": {
+          "type": "string",
+          "description": "Message content",
+          "maxLength": 4000
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "Formatted time string",
+          "maxLength": 30
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Record creation timestamp"
+        }
+      },
+      "required": ["id", "userId", "sender", "text"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profiles and career preference settings"
+    },
+    "/users/{userId}/roadmaps/{roadmapId}": {
+      "schema": "UserRoadmap",
+      "description": "User personalized career roadmaps and milestones"
+    },
+    "/users/{userId}/taskProgress/{taskId}": {
+      "schema": "TaskProgress",
+      "description": "Practice task completion records"
+    },
+    "/users/{userId}/weeklySchedules/{scheduleId}": {
+      "schema": "WeeklyScheduleRecord",
+      "description": "Weekly study schedules and habit tracking"
+    },
+    "/users/{userId}/chatMessages/{messageId}": {
+      "schema": "ChatMessageRecord",
+      "description": "Persistent AI Career Advisor conversation history"
+    }
+  }
+}

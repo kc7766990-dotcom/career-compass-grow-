@@ -1,0 +1,129 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny all access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Hardened Primitives
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Entity Validation Helpers
+    function isValidUserProfile(data, userId) {
+      return data.userId is string &&
+        data.userId == userId &&
+        data.name is string && data.name.size() <= 100 &&
+        data.careerGoal is string && data.careerGoal.size() <= 80 &&
+        data.studyHours is string && data.studyHours.size() <= 30 &&
+        data.targetTimeline is string && data.targetTimeline.size() <= 30 &&
+        (!('email' in data) || (data.email is string && data.email.size() <= 150)) &&
+        (!('education' in data) || (data.education is string && data.education.size() <= 50)) &&
+        (!('experience' in data) || (data.experience is string && data.experience.size() <= 50)) &&
+        (!('targetMarket' in data) || (data.targetMarket is string && data.targetMarket.size() <= 50)) &&
+        (!('skills' in data) || (data.skills is list && data.skills.size() <= 50)) &&
+        (!('weakSkills' in data) || (data.weakSkills is list && data.weakSkills.size() <= 50));
+    }
+
+    function isValidUserRoadmap(data, userId) {
+      return data.id is string && data.id.size() <= 128 &&
+        data.userId is string && data.userId == userId &&
+        data.role is string && data.role.size() <= 80 &&
+        data.overallScore is number && data.overallScore >= 0 && data.overallScore <= 100 &&
+        data.immediatePrioritySkill is string && data.immediatePrioritySkill.size() <= 100 &&
+        (!('immediatePriorityWhy' in data) || (data.immediatePriorityWhy is string && data.immediatePriorityWhy.size() <= 500)) &&
+        (!('immediatePriorityProject' in data) || (data.immediatePriorityProject is string && data.immediatePriorityProject.size() <= 200));
+    }
+
+    function isValidTaskProgress(data, userId) {
+      return data.taskId is string && data.taskId.size() <= 128 &&
+        data.userId is string && data.userId == userId &&
+        data.phaseNumber is number && data.phaseNumber >= 1 &&
+        data.completed is bool;
+    }
+
+    function isValidWeeklySchedule(data, userId) {
+      return data.id is string && data.id.size() <= 128 &&
+        data.userId is string && data.userId == userId &&
+        data.weekTitle is string && data.weekTitle.size() <= 100 &&
+        (!('totalTasks' in data) || (data.totalTasks is number && data.totalTasks >= 0)) &&
+        (!('completedTasks' in data) || (data.completedTasks is number && data.completedTasks >= 0));
+    }
+
+    function isValidChatMessage(data, userId) {
+      return data.id is string && data.id.size() <= 128 &&
+        data.userId is string && data.userId == userId &&
+        data.sender is string && (data.sender == 'user' || data.sender == 'assistant') &&
+        data.text is string && data.text.size() <= 4000;
+    }
+
+    // Connection testing doc
+    match /test/connection {
+      allow read: if true;
+    }
+
+    // User Profile matching
+    match /users/{userId} {
+      allow get: if isOwner(userId) && isValidId(userId);
+      allow list: if false; // Disallow querying all users
+      allow create: if isOwner(userId) && isValidId(userId) && isValidUserProfile(incoming(), userId);
+      allow update: if isOwner(userId) && isValidId(userId) && isValidUserProfile(incoming(), userId) && incoming().userId == existing().userId;
+      allow delete: if isOwner(userId) && isValidId(userId);
+
+      // User Roadmaps Subcollection
+      match /roadmaps/{roadmapId} {
+        allow get: if isOwner(userId) && isValidId(roadmapId);
+        allow list: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(roadmapId) && isValidUserRoadmap(incoming(), userId);
+        allow update: if isOwner(userId) && isValidId(roadmapId) && isValidUserRoadmap(incoming(), userId) && incoming().userId == existing().userId;
+        allow delete: if isOwner(userId) && isValidId(roadmapId);
+      }
+
+      // Task Progress Subcollection
+      match /taskProgress/{taskId} {
+        allow get: if isOwner(userId) && isValidId(taskId);
+        allow list: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(taskId) && isValidTaskProgress(incoming(), userId);
+        allow update: if isOwner(userId) && isValidId(taskId) && isValidTaskProgress(incoming(), userId) && incoming().userId == existing().userId;
+        allow delete: if isOwner(userId) && isValidId(taskId);
+      }
+
+      // Weekly Schedules Subcollection
+      match /weeklySchedules/{scheduleId} {
+        allow get: if isOwner(userId) && isValidId(scheduleId);
+        allow list: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(scheduleId) && isValidWeeklySchedule(incoming(), userId);
+        allow update: if isOwner(userId) && isValidId(scheduleId) && isValidWeeklySchedule(incoming(), userId) && incoming().userId == existing().userId;
+        allow delete: if isOwner(userId) && isValidId(scheduleId);
+      }
+
+      // Chat Messages Subcollection
+      match /chatMessages/{messageId} {
+        allow get: if isOwner(userId) && isValidId(messageId);
+        allow list: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(messageId) && isValidChatMessage(incoming(), userId);
+        allow update: if false; // Chat messages are append-only
+        allow delete: if isOwner(userId) && isValidId(messageId);
+      }
+    }
+  }
+}

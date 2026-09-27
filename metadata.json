@@ -1,0 +1,7 @@
+{
+  "name": "Career Compass",
+  "description": "AI-Powered Personalized Career & Software Engineering Roadmap - Your Skills. Your Goal. Your Personalized Path.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
