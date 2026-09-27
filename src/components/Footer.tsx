@@ -45,9 +45,18 @@ export const Footer: React.FC = () => {
           <button onClick={() => setActiveTab('profile')} className="hover:text-cyan-400 transition cursor-pointer">Profile</button>
         </div>
 
-        {/* Copyright */}
-        <div className="text-center text-xs text-slate-400 pt-4">
-          © 2026 Career Compass. All rights reserved.
+        {/* Professional Footer Watermark & Copyright */}
+        <div className="text-center pt-6 border-t border-slate-900 flex flex-col items-center justify-center gap-1.5">
+          <p className="text-xs font-medium tracking-wide text-slate-400">
+            © 2026 Career Compass — AI-Powered Career Guidance
+          </p>
+          <div className="flex items-center gap-2 text-[10px] text-slate-500 font-mono tracking-widest uppercase">
+            <span>Your Skills</span>
+            <span>•</span>
+            <span className="text-cyan-400">Your Goal</span>
+            <span>•</span>
+            <span>Your Personalized Path</span>
+          </div>
         </div>
       </div>
     </footer>

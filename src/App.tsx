@@ -17,13 +17,17 @@ import { ProgressDashboard } from './components/ProgressDashboard';
 import { AIAssistant } from './components/AIAssistant';
 import { ProfileView } from './components/ProfileView';
 import { Footer } from './components/Footer';
+import { BackgroundWatermark } from './components/BackgroundWatermark';
 import { Bot, CheckCircle, Sparkles } from 'lucide-react';
 
 const AppContent: React.FC = () => {
   const { activeTab, setActiveTab, toastMessage } = useCareerCompass();
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-950 text-slate-100 selection:bg-cyan-500 selection:text-slate-950">
+    <div className="relative min-h-screen flex flex-col bg-slate-950 text-slate-100 selection:bg-cyan-500 selection:text-slate-950 overflow-x-hidden">
+      {/* Professional Fixed Diagonal Watermark (Stays BEHIND all content with pointer-events-none) */}
+      <BackgroundWatermark />
+
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed bottom-6 right-6 z-50 animate-bounce">
@@ -34,11 +38,13 @@ const AppContent: React.FC = () => {
         </div>
       )}
 
-      {/* Main Top Navigation */}
-      <Navbar />
+      {/* Main Top Navigation (relative z-10 to stay strictly in front of watermark) */}
+      <div className="relative z-20">
+        <Navbar />
+      </div>
 
-      {/* Main Page Content */}
-      <main className="flex-1">
+      {/* Main Page Content (relative z-10 to stay strictly in front of watermark) */}
+      <main className="flex-1 relative z-10">
         {activeTab === 'home' && (
           <div>
             <Hero />
@@ -79,8 +85,10 @@ const AppContent: React.FC = () => {
         </button>
       )}
 
-      {/* Master Footer */}
-      <Footer />
+      {/* Master Footer (relative z-10) */}
+      <div className="relative z-10">
+        <Footer />
+      </div>
     </div>
   );
 };
